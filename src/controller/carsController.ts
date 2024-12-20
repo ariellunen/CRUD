@@ -1,21 +1,6 @@
 import { Request, Response } from "express";
-
-let cars = [
-  {
-    id: 1,
-    color: "purple",
-    type: "minivan",
-    registration: new Date("2017-01-03"),
-    capacity: 7,
-  },
-  {
-    id: 2,
-    color: "red",
-    type: "station wagon",
-    registration: new Date("2018-03-03"),
-    capacity: 5,
-  },
-];
+import { cars } from "../data/carsData";
+import { Car } from "../model/Car";
 
 export const getCars = (req: Request, res: Response) => {
   return res.status(200).json(cars);
@@ -38,7 +23,7 @@ export const addCar = (req: Request, res: Response) => {
     return res.status(404).json("Some data is missing");
   }
 
-  const newCar = {
+  const newCar: Car = {
     id: Date.now(),
     color: color,
     type: type,
@@ -70,16 +55,17 @@ export const updateCar = (req: Request<{ id: string }>, res: Response) => {
 export const deleteCar = (req: Request<{ id: string }>, res: Response) => {
   const { id } = req.params;
   const car = cars.find((c) => c.id === parseInt(id));
+  let newCarsArr = cars;
   if (!car) {
     return res.status(404).json(`car with the id ${id} not found`);
   }
-  cars = cars.filter((c) => c.id !== parseInt(id));
+  newCarsArr = newCarsArr.filter((c) => c.id !== parseInt(id));
   return res.status(200).json("car was deleted");
 };
 
 export const filterCar = (req: Request, res: Response) => {
   const filters = req.query;
-  let filteredCars = cars;
+  let filteredCars: Car[] = cars;
 
   if (!filters) {
     return res.status(200).json(cars);
